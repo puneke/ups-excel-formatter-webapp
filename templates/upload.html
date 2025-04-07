@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+
+{% block upload %}
+<h2>Upload Excel File</h2>
+<div class="upload-container">
+    <!-- Traditional file input, hidden but still functional -->
+    <form id="uploadForm" method="POST" class="form-group" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <input type="file" id="fileInput" name="file" style="display: none;" accept=".xlsx,.xls"/>
+        
+        <!-- Drag and drop zone -->
+        <div id="dropZone" class="drop-area">
+            <p>Drag and drop your Excel file here</p>
+            <p>or</p>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                Choose File
+            </button>
+            <p id="fileInfo" class="mt-2"></p>
+        </div>
+        
+        <button type="submit" class="btn btn-success mt-3" id="uploadButton" style="display: none;">
+            Upload File
+        </button>
+    </form>
+</div>
+
+<style>
+    .upload-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 20px;
+    }
+
+    .drop-area {
+        width: 100%;
+        min-height: 400px;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        background: #f8f9fa;
+        transition: border 0.3s ease, background 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .drop-area.dragover {
+        border-color: #007bff;
+        background: #e7f1ff;
+    }
+
+    .drop-area p {
+        margin: 10px 0;
+        color: #666;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const uploadButton = document.getElementById('uploadButton');
+
+        if (!dropZone || !fileInput || !fileInfo || !uploadButton) {
+            console.error('One or more required elements are missing');
+            return;
+        }
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop zone when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('dragover');
+        }
+
+        // Handle dropped files
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        // Handle file input change
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                // Check if file is an Excel file
+                if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || 
+                    file.type === "application/vnd.ms-excel" ||
+                    file.name.match(/\.(xlsx|xls)$/i)) { // Added filename fallback check
+                    fileInfo.textContent = `Selected file: ${file.name}`;
+                    uploadButton.style.display = 'block';
+                    // Create a new FileList object
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInput.files = dataTransfer.files;
+                } else {
+                    fileInfo.textContent = 'Please select an Excel file (.xlsx or .xls)';
+                    uploadButton.style.display = 'none';
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
