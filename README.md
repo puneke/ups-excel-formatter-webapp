@@ -1,4 +1,4 @@
-# Excel Formatter Webapp version
+# Excel Formatter (webapp version)
 
 Excel formatter for UPS.
 
