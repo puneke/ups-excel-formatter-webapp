@@ -58,7 +58,7 @@ def upload():
                 file.save(raw_filepath)
     
                 processed_file = standard_order(raw_filepath)
-                print(f'datetime: {datetime.datetime.now()}')
+                print(f'Datetime: {datetime.datetime.now()}')
                 return send_file(processed_file, as_attachment=True)
 
             elif filename == 'Inventory_Inbound_with_KPI_Details_NZ.xlsx':
@@ -68,7 +68,7 @@ def upload():
                 
                 
                 processed_file = inventory_inbound(raw_filepath)
-                print(f'datetime: {datetime.datetime.now()}')
+                print(f'Datetime: {datetime.datetime.now()}')
                 return send_file(processed_file, as_attachment=True)
 
             else: 
@@ -80,4 +80,4 @@ def upload():
     return render_template('upload.html', form=form)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
