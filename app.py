@@ -58,7 +58,7 @@ def upload():
                 file.save(raw_filepath)
     
                 processed_file = standard_order(raw_filepath)
-                print(f'Datetime: {datetime.datetime.now()}')
+                print(f'datetime: {datetime.datetime.now()}')
                 return send_file(processed_file, as_attachment=True)
 
             elif filename == 'Inventory_Inbound_with_KPI_Details_NZ.xlsx':
