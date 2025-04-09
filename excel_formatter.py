@@ -36,22 +36,40 @@ def win_convert_csv_skip_rows_com(in_file, rows, out_file):
             excel.Quit()
 
 def win_convert_csv_skip_rows_soffice(in_file, rows, out_file):
-        """use soffice to convert xlsx to csv (fastest)"""
-        subprocess.run([r"C:\Program Files\LibreOffice\program\soffice.exe", "--headless", "--convert-to", "csv", in_file])
-        csv_file = os.path.basename(in_file.replace(".xlsx", ".csv"))
-        
-        # read file
-        with open(csv_file, 'r') as f:
-            reader = csv.reader(f)
-            data = list(reader)  # store all rows in a list
+        """use soffice to convert xlsx to csv"""
+        if os.name == 'nt':
+            subprocess.run([r"C:\Program Files\LibreOffice\program\soffice.exe", "--headless", "--convert-to", "csv", in_file])
+            csv_file = os.path.basename(in_file.replace(".xlsx", ".csv"))
+            
+            # read file
+            with open(csv_file, 'r') as f:
+                reader = csv.reader(f)
+                data = list(reader)  # store all rows in a list
 
-        # skip the specified number of rows 
-        data = data[rows:]
+            # skip the specified number of rows 
+            data = data[rows:]
 
-        # write the modified data back to file
-        with open(out_file, 'w', newline='') as f_out:
-            writer = csv.writer(f_out)
-            writer.writerows(data)  # Write all remaining rows
+            # write the modified data back to file
+            with open(out_file, 'w', newline='') as f_out:
+                writer = csv.writer(f_out)
+                writer.writerows(data)  # Write all remaining rows
+        elif os.name == 'posix':
+            subprocess.run([r"libreoffice", "--headless", "--convert-to", "csv", in_file])
+            csv_file = os.path.basename(in_file.replace(".xlsx", ".csv"))
+            
+            # read file
+            with open(csv_file, 'r') as f:
+                reader = csv.reader(f)
+                data = list(reader)  # store all rows in a list
+
+            # skip the specified number of rows 
+            data = data[rows:]
+
+            # write the modified data back to file
+            with open(out_file, 'w', newline='') as f_out:
+                writer = csv.writer(f_out)
+                writer.writerows(data)  # Write all remaining rows
+
 
 def standard_order(file_path):
     """Formats standard order file and returns the processed file path."""
