@@ -68,7 +68,7 @@ def upload():
                 
                 
                 processed_file = inventory_inbound(raw_filepath)
-                print(f'Datetime: {datetime.datetime.now()}')
+                print(f'datetime: {datetime.datetime.now()}')
                 return send_file(processed_file, as_attachment=True)
 
             else: 
