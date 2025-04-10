@@ -1,26 +1,28 @@
-# Use lightweight Python 3.11 base
+# Use Python 3.9 slim base
 FROM python:3.9-slim-bullseye
 
-# Install LibreOffice and system deps
+# Install system dependencies and LibreOffice
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    libreoffice \
-    libreoffice-calc \  # Required for Excel support
-    fonts-liberation \  # Fonts for proper rendering
-    && rm -rf /var/lib/apt/lists/*
+        libreoffice \
+        fonts-liberation \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first for caching
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app files
+# Copy application code
 COPY . .
 
-# Verify soffice is installed
-RUN soffice --version || echo "LibreOffice check failed"
+# Optional: Check if LibreOffice is installed
+RUN which soffice && soffice --version || echo "LibreOffice check failed"
 
-# Run Flask app
+# Set environment variable to avoid LibreOffice dialogs
+ENV HOME=/tmp
+
+# Run the Flask app with Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:10000", "app:app"]
