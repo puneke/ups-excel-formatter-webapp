@@ -55,7 +55,7 @@ def win_convert_csv_skip_rows_soffice(in_file, rows, out_file):
                 writer.writerows(data)  # Write all remaining rows
         elif os.name == 'posix':
             try:
-                subprocess.run([r"soffice", "--headless", "--convert-to", "csv", in_file])
+                subprocess.run(["soffice", "--headless", "--convert-to", "csv", in_file])
             except subprocess.CalledProcessError as e:
                 print(f'error {e}') 
                 
