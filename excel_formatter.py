@@ -54,7 +54,13 @@ def win_convert_csv_skip_rows_soffice(in_file, rows, out_file):
                 writer = csv.writer(f_out)
                 writer.writerows(data)  # Write all remaining rows
         elif os.name == 'posix':
-            subprocess.run([r"soffice", "--headless", "--convert-to", "csv", in_file])
+            try:
+                subprocess.run([r"soffice", "--headless", "--convert-to", "csv", in_file])
+            except subprocess.CalledProcessError as e:
+                print(f'error {e}') 
+                
+            subprocess.run(["unoconv", "-f", "csv", in_file])
+            
             csv_file = os.path.basename(in_file.replace(".xlsx", ".csv"))
             
             # read file
