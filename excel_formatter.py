@@ -35,7 +35,7 @@ def win_convert_csv_skip_rows_com(in_file, rows, out_file):
         if excel:
             excel.Quit()
 
-def win_convert_csv_skip_rows_soffice(in_file, rows, out_file):
+def convert_csv_skip_rows_soffice(in_file, rows, out_file):
         """use soffice to convert xlsx to csv"""
         if os.name == 'nt':
             subprocess.run([r"C:\Program Files\LibreOffice\program\soffice.exe", "--headless", "--convert-to", "csv", in_file])
@@ -85,10 +85,14 @@ def standard_order(file_path):
     file_csv = os.path.abspath(file_csv)
     
     # conditional csv conversion based on operating system
-    win_convert_csv_skip_rows_soffice(file_path, 7, file_csv)
+    convert_csv_skip_rows_soffice(file_path, 7, file_csv)
 
     # load csv into pandas
-    df = pd.read_csv(file_csv, encoding='ISO-8859-1')
+    try:
+        df = pd.read_csv(file_csv, encoding='ISO-8859-1')
+    except UnicodeDecodeError:
+        df = pd.read_csv(file_csv, encoding='utf-8')
+        
     df = df.astype(str)  # convert all data to string to enable SQL filtering
 
     # sql query to filter relevant columns 
@@ -148,10 +152,14 @@ def inventory_inbound(file_path):
     file_csv = os.path.abspath(file_csv)
 
     # conditional csv conversion based on operating system
-    win_convert_csv_skip_rows_soffice(file_path, 4, file_csv)
+    convert_csv_skip_rows_soffice(file_path, 4, file_csv)
     
     # load csv into pandas
-    df = pd.read_csv(file_csv, encoding='ISO-8859-1')
+    try:
+        df = pd.read_csv(file_csv, encoding='ISO-8859-1')
+    except UnicodeDecodeError:
+        df = pd.read_csv(file_csv, encoding='utf-8')
+    
     df = df.dropna(how='all') # drop rows with no values
     df = df.astype(str)  # convert all data to string to enable SQL filtering
 
