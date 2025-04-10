@@ -4,6 +4,7 @@
 # Install LibreOffice
 sudo apt-get update
 sudo apt-get install -y libreoffice
+sudo apt-get install -y unoconv
 
 # Install Python dependencies
 pip install -r requirements.txt
