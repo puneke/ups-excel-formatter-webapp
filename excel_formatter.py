@@ -6,34 +6,7 @@ import shutil
 import subprocess
 import sqlite3
 import time
-
-def win_convert_csv_skip_rows_com(in_file, rows, out_file):
-    """use com to convert xlsx to csv (slowest)"""
-    workbook = None
-    excel = None
-    try:
-        import win32com.client as win32
-        excel = win32.Dispatch('Excel.Application')  # Late binding
-        excel.Visible = False
-        
-        # Open and convert the file
-        workbook = excel.Workbooks.Open(in_file)
-        sheet = workbook.ActiveSheet
-        
-        # Delete first 7 rows
-        sheet.Rows(f"1:{rows}").Delete()
-        
-        # Save as CSV
-        workbook.SaveAs(out_file, FileFormat=6)  # 6 is CSV format
-    except Exception as e:
-        print(f"Error converting file: {e}")
-    finally:
-        
-        # Clean up
-        if workbook:
-            workbook.Close(SaveChanges=False)
-        if excel:
-            excel.Quit()
+import chardet
 
 def convert_csv_skip_rows_soffice(in_file, rows, out_file):
         """use soffice to convert xlsx to csv"""
@@ -88,10 +61,10 @@ def standard_order(file_path):
     convert_csv_skip_rows_soffice(file_path, 7, file_csv)
 
     # load csv into pandas
-    try:
-        df = pd.read_csv(file_csv, encoding='ISO-8859-1')
-    except UnicodeDecodeError:
-        df = pd.read_csv(file_csv, encoding='utf-8')
+    with open(file_csv, 'rb') as f:
+        result = chardet.detect(f.read())
+   
+    df = pd.read_csv(file_csv, encoding=result['encoding'])
         
     df = df.astype(str)  # convert all data to string to enable SQL filtering
 
@@ -155,10 +128,10 @@ def inventory_inbound(file_path):
     convert_csv_skip_rows_soffice(file_path, 4, file_csv)
     
     # load csv into pandas
-    try:
-        df = pd.read_csv(file_csv, encoding='ISO-8859-1')
-    except UnicodeDecodeError:
-        df = pd.read_csv(file_csv, encoding='utf-8')
+    with open(file_csv, 'rb') as f:
+        result = chardet.detect(f.read())
+   
+    df = pd.read_csv(file_csv, encoding=result['encoding'])
     
     df = df.dropna(how='all') # drop rows with no values
     df = df.astype(str)  # convert all data to string to enable SQL filtering
