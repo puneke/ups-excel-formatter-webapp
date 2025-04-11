@@ -6,9 +6,6 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libreoffice \
         openjdk-11-jre-headless \
-        gcc \
-        python3-dev \
-        build-essential \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
