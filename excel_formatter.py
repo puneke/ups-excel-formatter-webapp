@@ -6,7 +6,6 @@ import shutil
 import subprocess
 import sqlite3
 import time
-import chardet
 
 def convert_csv_skip_rows_soffice(in_file, rows, out_file):
         """use soffice to convert xlsx to csv"""
@@ -61,10 +60,7 @@ def standard_order(file_path):
     convert_csv_skip_rows_soffice(file_path, 7, file_csv)
 
     # load csv into pandas
-    with open(file_csv, 'rb') as f:
-        result = chardet.detect(f.read())
-   
-    df = pd.read_csv(file_csv, encoding=result['encoding'])
+    df = pd.read_csv(file_csv)
         
     df = df.astype(str)  # convert all data to string to enable SQL filtering
 
@@ -128,10 +124,7 @@ def inventory_inbound(file_path):
     convert_csv_skip_rows_soffice(file_path, 4, file_csv)
     
     # load csv into pandas
-    with open(file_csv, 'rb') as f:
-        result = chardet.detect(f.read())
-   
-    df = pd.read_csv(file_csv, encoding=result['encoding'])
+    df = pd.read_csv(file_csv)
     
     df = df.dropna(how='all') # drop rows with no values
     df = df.astype(str)  # convert all data to string to enable SQL filtering
